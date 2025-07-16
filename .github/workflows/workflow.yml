@@ -28,9 +28,9 @@ jobs:
         echo "${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}" > drive_credentials.json
         echo "${{ secrets.YOUTUBE_API_CREDENTIALS }}" > youtube_credentials.json
 
-    - name: Run the video upload script
+     - name: Run the video upload script
       run: |
-        python .github/workflows/upload_videos.py  # استخدم المسار الصحيح للسكربت
+        python .github/workflows/upload_videos.py  # تحديث المسار حسب مكان السكربت
 
     - name: Clean up
       run: |

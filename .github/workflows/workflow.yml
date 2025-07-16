@@ -30,7 +30,7 @@ jobs:
 
     - name: Run the video upload script
       run: |
-        python upload_videos.py  # تأكد من أن سكربت `upload_videos.py` موجود في نفس المجلد
+        python .github/workflows/upload_videos.py  # استخدم المسار الصحيح للسكربت
 
     - name: Clean up
       run: |

@@ -1,41 +1,37 @@
-name: run main.py
+name: YouTube Video Scheduler
 
 on:
   schedule:
-    - cron: '0 0 * * 1' # At 00:00 on Monday
+    - cron: '0 6 * * *' # يعمل يومياً في الساعة 6 صباحاً بتوقيت UTC
+  workflow_dispatch: # يمكن تشغيله يدويًا من GitHub UI
 
 jobs:
-  build:
+  upload_videos:
     runs-on: ubuntu-latest
+
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: checkout repo content
-        uses: actions/checkout@v2 # checkout the repository content to github runner
+    - name: Set up Python 3.x
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
 
-      - name: setup python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9' # install the python version needed
-          
-      - name: install python packages
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          
-      - name: execute py script # run main.py
-        env:
-          SOME_SECRET: ${{ secrets.SOME_SECRET }}
-        run: python main.py
-          
-      - name: commit files
-        run: |
-         git config --global user.name "drobliza"
-          git config --global user.email "youremail@gmail.com"
-          git add -A
-          git diff-index --quiet HEAD || (git commit -a -m "updated logs" --allow-empty)
-          
-      - name: push changes
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main 
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install google-api-python-client google-auth google-auth-httplib2 google-auth-oauthlib
+
+    - name: Download Google Drive and YouTube API credentials from GitHub Secrets
+      run: |
+        echo "${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}" > drive_credentials.json
+        echo "${{ secrets.YOUTUBE_API_CREDENTIALS }}" > youtube_credentials.json
+
+    - name: Run the video upload script
+      run: |
+        python upload_videos.py  # تأكد من أن سكربت `upload_videos.py` موجود في نفس المجلد
+
+    - name: Clean up
+      run: |
+        rm drive_credentials.json youtube_credentials.json
